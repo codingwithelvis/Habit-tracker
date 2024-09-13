@@ -14,10 +14,10 @@ jobs:
 
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3  # Updated to v3 to avoid Node.js 12, 16, and use Node.js 20
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4  # Updated to v4 to be compatible with Node.js 20
         with:
           python-version: '3.9'
 
@@ -38,7 +38,7 @@ jobs:
           buildozer android debug
           
       - name: Upload APK artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3  # Already up-to-date to run on Node.js 20
         with:
           name: MyApp.apk
           path: bin/*
