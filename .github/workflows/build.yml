@@ -14,31 +14,45 @@ jobs:
 
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v3  # Updated to v3 to avoid Node.js 12, 16, and use Node.js 20
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v4  # Updated to v4 to be compatible with Node.js 20
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y python3-pip
+          sudo apt-get install -y python3-pip zip unzip
           pip install --upgrade cython
           pip install buildozer
 
-      - name: Install Android SDK and NDK
+      - name: Install Android SDK
         run: |
-          sudo apt-get install -y android-sdk
-          sudo apt-get install -y android-ndk
+          sudo mkdir -p /usr/local/lib/android/sdk
+          cd /usr/local/lib/android/sdk
+          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+          unzip commandlinetools-linux-9477386_latest.zip
+          rm commandlinetools-linux-9477386_latest.zip
+          sudo mkdir -p ~/.android
+          touch ~/.android/repositories.cfg
+          yes | sudo /usr/local/lib/android/sdk/cmdline-tools/bin/sdkmanager --licenses
+          yes | sudo /usr/local/lib/android/sdk/cmdline-tools/bin/sdkmanager --update
+          yes | sudo /usr/local/lib/android/sdk/cmdline-tools/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2" "ndk;25.1.8937393"
+
+      - name: Set Android environment variables
+        run: |
+          echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+          echo "ANDROID_NDK_HOME=/usr/local/lib/android/sdk/ndk/25.1.8937393" >> $GITHUB_ENV
+          echo "PATH=$PATH:/usr/local/lib/android/sdk/platform-tools" >> $GITHUB_ENV
 
       - name: Build APK with Buildozer
         run: |
           buildozer android debug
           
       - name: Upload APK artifact
-        uses: actions/upload-artifact@v3  # Already up-to-date to run on Node.js 20
+        uses: actions/upload-artifact@v3
         with:
           name: MyApp.apk
           path: bin/*
