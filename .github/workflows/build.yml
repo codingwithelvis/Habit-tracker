@@ -36,7 +36,7 @@ jobs:
           unzip commandlinetools-linux-9477386_latest.zip
           rm commandlinetools-linux-9477386_latest.zip
           sudo mkdir -p ~/.android
-          touch ~/.android/repositories.cfg
+          sudo touch ~/.android/repositories.cfg  # Adding sudo to fix permission issue
           yes | sudo /usr/local/lib/android/sdk/cmdline-tools/bin/sdkmanager --licenses
           yes | sudo /usr/local/lib/android/sdk/cmdline-tools/bin/sdkmanager --update
           yes | sudo /usr/local/lib/android/sdk/cmdline-tools/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2" "ndk;25.1.8937393"
