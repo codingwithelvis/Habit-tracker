@@ -30,22 +30,21 @@ jobs:
 
       - name: Install Android SDK
         run: |
-          sudo mkdir -p /usr/local/lib/android/sdk/cmdline-tools/latest
-          cd /usr/local/lib/android/sdk/cmdline-tools/latest
-          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-          unzip commandlinetools-linux-9477386_latest.zip
-          rm commandlinetools-linux-9477386_latest.zip
-          sudo mkdir -p ~/.android
-          sudo touch ~/.android/repositories.cfg
-          yes | sudo /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/usr/local/lib/android/sdk --licenses
-          yes | sudo /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/usr/local/lib/android/sdk --update
-          yes | sudo /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/usr/local/lib/android/sdk "platform-tools" "platforms;android-33" "build-tools;33.0.2" "ndk;25.1.8937393"
+          mkdir -p $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest
+          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
+          unzip cmdline-tools.zip -d $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest
+          rm cmdline-tools.zip
+          mkdir -p ~/.android
+          touch ~/.android/repositories.cfg
+          yes | $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/.buildozer/android/platform/android-sdk --licenses
+          yes | $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/.buildozer/android/platform/android-sdk --update
+          yes | $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/.buildozer/android/platform/android-sdk "platform-tools" "platforms;android-33" "build-tools;33.0.2" "ndk;25.1.8937393"
 
       - name: Set Android environment variables
         run: |
-          echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
-          echo "ANDROID_NDK_HOME=/usr/local/lib/android/sdk/ndk/25.1.8937393" >> $GITHUB_ENV
-          echo "PATH=$PATH:/usr/local/lib/android/sdk/platform-tools:/usr/local/lib/android/sdk/cmdline-tools/latest/bin" >> $GITHUB_ENV
+          echo "ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk" >> $GITHUB_ENV
+          echo "ANDROID_NDK_HOME=$HOME/.buildozer/android/platform/android-sdk/ndk/25.1.8937393" >> $GITHUB_ENV
+          echo "PATH=$PATH:$HOME/.buildozer/android/platform/android-sdk/platform-tools:$HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_ENV
 
       - name: Build APK with Buildozer
         run: |
@@ -55,4 +54,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: MyApp.apk
-          path: bin/*
+          path: bin/*.apk
